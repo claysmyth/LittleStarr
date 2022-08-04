@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import os
 import dateutil.parser as dparser
+import pprint
 
 """This script creates a CSV that contains the relevant filepaths to RCS raw data, DREEM filepaths, and output paths
  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.
@@ -35,10 +36,18 @@ if __name__ == "__main__":
 
         h5_file_paths = [f"{participant_dreem_H5_path}/{f}" for f in os.listdir(participant_dreem_H5_path)]
         txt_file_paths = [f"{participant_dreem_txt_path}/{f}" for f in os.listdir(participant_dreem_txt_path)]
-        
-        # Create pandas dataframe of Dreem file paths and datetime objects
+
+        # Create datetime object by parsing H5 file names
         dates = [dparser.parse(k.split("---")[1], fuzzy=True).date() for k in os.listdir(participant_dreem_H5_path)]
-        participant_dreem_df = pd.DataFrame.from_dict({"H5": h5_file_paths, "Txt": txt_file_paths, "DateTime": dates})
+        # Order txt files paths to sync with DateTime order. Assumes each datetime object is unique
+        txt_file_paths_ordered = []
+        for date in dates:
+            txt_file_paths_ordered.extend([txt_path for txt_path in txt_file_paths
+                                           if date.strftime("%d-%b-%Y") in txt_path])
+
+        # Create pandas dataframe of Dreem file paths and datetime objects
+        participant_dreem_df = pd.DataFrame.from_dict({"H5": h5_file_paths, "Txt": txt_file_paths_ordered,
+                                                       "DateTime": dates})
 
         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &
                                   (summary_df["SessionType(s)"] == "Overnight")].copy()
