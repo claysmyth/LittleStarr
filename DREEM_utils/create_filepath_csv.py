@@ -10,7 +10,6 @@ import pprint
  Intended to be called from command line as 'python3 create_filepath_csv <outfile_name> RCS02 RCS03...' """
 
 PROJECT_SUMMARY_CSV = "/media/dropbox_hdd/Starr Lab Dropbox/Projects/Sleep/Sleep_Summary.csv"
-"/media/dropbox_hdd/Starr Lab Dropbox/Projects/Sleep"
 DREEM_DATA_BASEPATH = "/media/longterm_hdd/Clay/DREEM_data"
 DROP_COLUMNS = ["Dropbox_Link", "Data_Server_Hyperlink", 'Unnamed: 0']
 

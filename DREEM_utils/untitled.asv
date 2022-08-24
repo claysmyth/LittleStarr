@@ -1,0 +1,29 @@
+% Read output csv created from 'create_filepath_csv.py'
+file_paths = readtable(filename);
+
+% Import File_locations and Options necessary for Fahim's dreem sync
+% function
+[File_locations, Options] = get_sync_package_structs();
+
+% Cycle through each session
+for i=1:length(file_paths)
+    % Update File_locations fields with appropriate H5, txt, and RCS paths
+    File_locations = update_file_paths_from_table(i,file_paths, File_locations);
+    % Get synced dreem data and relevant RCS info
+    [sleep_DREEM_data, combinedDataTable] = sync_package(File_locations, Options);
+    % Drop unwanted columns to save disk space
+    combinedDataTable = drop_unwanted_columns(combinedDataTable, cols_to_drop);
+    % Add sleep stage labels to combinedDataTable
+    combinedDataTable = add_sleep_stage_labels(combinedDataTable, sleep_DREEM_data);
+    
+    % Output assumes a directory structure similar to that in Projects
+    % directory on Dropbox
+    out_file_path = get_outpath(base_path, file_paths, i);
+    
+    % Save session's sleep-labelled combinedDataTable as parquet to outpath
+    parquetwrite(out_file_path, combinedDataTable);
+    
+    % Close any potential plots
+    close all;
+end
+
