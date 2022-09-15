@@ -27,7 +27,10 @@ File_locations.rcsfolderPath= full_rcs_path(2:end-1);
 
 % Location where Corrected Dreem data is saved
 File_locations.savepath= append('/media/longterm_hdd/Clay/DREEM_data/',file_paths.RCS_{ind},'/', ...
-    full_txt_path{end-2},'/CorrectedDreem/');
+    full_txt_path{end-2});
 
 % Name of corrected Dreem Data
-File_locations.savefilename=[File_locations.h5filename(1:end-3) '_' brain_side '.mat'];
+File_locations.savefilename=['./CorrectedDreem/' File_locations.h5filename(1:end-3) '_' brain_side '.mat'];
+
+% Name of sleep metadata CSV
+File_locations.summaryCSVfilename=['./SummaryCSV/' File_locations.h5filename(1:end-3) '_' brain_side '.csv'];

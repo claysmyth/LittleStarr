@@ -31,6 +31,9 @@ File_locations.newh5filename=[''];
 % Name of corrected h5 data
 File_locations.parquetfilename=[''];
 
+% Name of sleep metadata CSV
+File_locations.summaryCSVfilename=[''];
+
 
 %% Select options for synchronization
 Options=struct;
@@ -76,3 +79,5 @@ Options.SaveSleepResult=true;
 Options.SaveParquet=false;
 % Plot sampling intervals for Corrected dreem data
 Options.PlotSamplingIntervals=false;
+% Save sync summary CSV
+Options.SaveSyncSummaryCSV=true;

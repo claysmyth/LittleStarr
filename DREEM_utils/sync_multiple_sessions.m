@@ -7,8 +7,12 @@
 %      ../DREEM_data/RCS#/[Dreem ID]/CorrectedDreem/[DREEM ID -- Date].mat
 %               - Dreem data time-synchronized to RCS session
 
-FILE_PATH_CSV_NAME = '/media/longterm_hdd/Clay/DREEM_data/filepaths.csv';
+% Output of create_filepath_csv.py - contains the filepaths of RC+S and
+% corrrespongind DREEM data
+FILE_PATH_CSV_NAME = '/media/longterm_hdd/Clay/DREEM_data/filepaths_02_03_16.csv';
+% Columns to drop from combinedDataTable prior to writing to parquet file
 COLS_TO_DROP = {'TD_samplerate', 'Power_ExternalValuesMask', 'Power_FftSize', 'Power_ValidDataMask'};
+% basepath for parquet and eventlog csv
 OUT_PATH_BASE = '/media/longterm_hdd/Clay/Sleep_10day';
 
 % Read output csv created from 'create_filepath_csv.py'
@@ -26,7 +30,7 @@ end
 [File_locations, Options] = get_sync_package_structs();
 
 % Cycle through each session
-for i=63:height(file_paths)
+for i=1:height(file_paths)
     % Update File_locations fields with appropriate H5, txt, and RCS paths
     File_locations = update_file_paths_from_table(i, file_paths, File_locations);
     % Get synced dreem data and relevant RCS info

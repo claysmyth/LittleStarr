@@ -3,6 +3,7 @@ function [File_locations] = update_file_paths_from_table(ind, file_paths, File_l
 full_txt_path = split(file_paths.Txt{ind},"/");
 full_H5_path = split(file_paths.H5{ind}, "/");
 full_rcs_path = file_paths.Data_Server_FilePath{ind};
+brain_side = file_paths.Side{ind};
 
 % Location of Dreem h5 file
 H5_dir = join(full_H5_path(1:end-1), "/");
@@ -26,7 +27,10 @@ File_locations.rcsfolderPath= full_rcs_path(2:end-1);
 
 % Location where Corrected Dreem data is saved
 File_locations.savepath= append('/media/longterm_hdd/Clay/DREEM_data/',file_paths.RCS_{ind},'/', ...
-    full_txt_path{end-1},'/CorrectedDreem/');
+    full_txt_path{end-2});
 
 % Name of corrected Dreem Data
-File_locations.savefilename=[File_locations.h5filename(1:end-3) '.mat'];
+File_locations.savefilename=['/CorrectedDreem/' File_locations.h5filename(1:end-3) '_' brain_side '.mat'];
+
+% Name of sleep metadata CSV
+File_locations.summaryCSVfilename=['SummaryCSV'File_locations.h5filename(1:end-3) '_' brain_side '.csv'];
