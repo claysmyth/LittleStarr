@@ -12,6 +12,12 @@ File_locations.h5filelocation= H5_dir{1};
 % Name of Dreem h5 file
 File_locations.h5filename= full_H5_path{end};
 
+% Location of Dreem EDF file
+File_locations.EDFfilelocation= replace(File_locations.h5filelocation, 'H5', 'EDF');
+
+% Name of Dreem EDF file
+File_locations.EDFfilename= replace(File_locations.h5filename, 'h5', 'edf');
+
 % Location of Dreem sleep text file
 txt_dir = join(full_txt_path(1:end-1), "/");
 File_locations.sleepfilelocation= txt_dir{1};

@@ -40,6 +40,12 @@ Options=struct;
 % sampling rate of the DREEM data. All data streams will have this sampling
 % rate
 Options.Fs=250;
+
+% h5 reader option- variable for the timestamps
+Options.h5timestampName='eeg_timestamps';
+% EDF variables to add and sync
+Options.EDFvariablesToAdd={'PulseOxyInfrare';'RespirationX';'RespirationY';'RespirationZ'};
+
 % Display the Original Sleep hypnogram and the hypnogram with timestamps embedded 
 Options.DisplaySleepDataWithTimestamps=false;
 % Accelerometry in Dreem and RCS go through different filtering process at hardware level.
