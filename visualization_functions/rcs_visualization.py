@@ -81,7 +81,7 @@ def plot_spec_hypno_overlay(rcs_df, channel, sample_rate, window_length, title, 
     plt.show()
 
 
-def plot_PSD(psd_array, labels, title, f, freq_range=np.s_[1:101], plot_SEM=False, SEM=[], ax=None, legend=False, yo=-1):
+def plot_PSD(psd_array, labels, title, f, freq_range=np.s_[1:101], yaxis_range=[-8,-4], plot_SEM=False, SEM=[], ax=None, legend=False):
     """
     NOTE: Best to take the log of the PSD array prior to function call.
     Plots elements, or values, of psd_array with corresponding labels.
@@ -122,8 +122,8 @@ def plot_PSD(psd_array, labels, title, f, freq_range=np.s_[1:101], plot_SEM=Fals
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)
     ax.grid(False)
-    plt.ylim([-7.4, -6.4])
-    plt.xticks(size=15, ticks=np.arange(55, 76, 5))
+    plt.ylim(yaxis_range)
+    #plt.xticks(size=15, ticks=np.arange(55, 76, 5))
     plt.show()
 
     return None

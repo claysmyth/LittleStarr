@@ -9,7 +9,7 @@
 
 % Output of create_filepath_csv.py - contains the filepaths of RC+S and
 % corrrespongind DREEM data
-FILE_PATH_CSV_NAME = '/media/longterm_hdd/Clay/DREEM_data/filepaths_02_03_16.csv';
+FILE_PATH_CSV_NAME = '/media/longterm_hdd/Clay/DREEM_data/filepaths_07_09_edited.csv';
 % Columns to drop from combinedDataTable prior to writing to parquet file
 COLS_TO_DROP = {'TD_samplerate', 'Power_ExternalValuesMask', 'Power_FftSize', 'Power_ValidDataMask'};
 % basepath for parquet and eventlog csv
@@ -55,6 +55,8 @@ for i=1:height(file_paths)
 
         if sum(isnan(combinedDataTable.TD_key1)) == height(combinedDataTable)
             combinedDataTable = removevars(combinedDataTable, {'TD_key1'});
+        elseif sum(isnan(combinedDataTable.TD_key0)) == height(combinedDataTable)
+            combinedDataTable = removevars(combinedDataTable, {'TD_key0'});
         end
     end
 

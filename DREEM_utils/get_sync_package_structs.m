@@ -55,6 +55,8 @@ Options.FilterCorrectionAccelerometry=false;
 % If Dreem h5 file does not provide timezone, Use RCS timezone for Dreem
 % data
 Options.UseRCSTimezoneForCorrection=false;
+% Display overlap of valid data between Dreem and RCS streams
+Options.DisplayOverlaps=false;
 % Normalized Accelerometry of Dreem and RCS before calculating
 % cross-correlation
 Options.NormalizeAccelerometry=true;
