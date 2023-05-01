@@ -1,0 +1,118 @@
+{
+    "sourceFile": "DREEM_utils/create_filepath_csv.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 25,
+            "patches": [
+                {
+                    "date": 1682380808930,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1682380818675,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n \"\"\"This script creates a CSV that contains the relevant filepaths to RCS raw data, DREEM filepaths, and output paths\n  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n  Intended to be called from command line as 'python3 create_filepath_csv <outfile_name> RCS02 RCS03...' \"\"\"\n \n-PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/Sleep_Summary.csv\"\n+PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/DREEM_data\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n \n if __name__ == \"__main__\":\n"
+                },
+                {
+                    "date": 1682380909432,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,9 @@\n  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n  Intended to be called from command line as 'python3 create_filepath_csv <outfile_name> RCS02 RCS03...' \"\"\"\n \n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n-DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/DREEM_data\"\n+DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM_data\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n \n if __name__ == \"__main__\":\n \n"
+                },
+                {
+                    "date": 1682380924577,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,9 @@\n  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n  Intended to be called from command line as 'python3 create_filepath_csv <outfile_name> RCS02 RCS03...' \"\"\"\n \n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n-DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM_data\"\n+DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n \n if __name__ == \"__main__\":\n \n"
+                },
+                {
+                    "date": 1682381184997,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n import pprint\n \n \"\"\"This script creates a CSV that contains the relevant filepaths to RCS raw data, DREEM filepaths, and output paths\n  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n- Intended to be called from command line as 'python3 create_filepath_csv <outfile_name> RCS02 RCS03...' \"\"\"\n+ Intended to be called from command line as 'python3 create_filepath_csv.py <outfile_name> RCS02 RCS03...' \"\"\"\n \n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n"
+                },
+                {
+                    "date": 1682381459036,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,8 +50,9 @@\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                   (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n \n+        \n         # Merge RCS dataframe with dreem dataframe\n         tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n \n         if not ind:\n"
+                },
+                {
+                    "date": 1682381466731,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,9 +50,9 @@\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                   (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n \n-        \n+        print(sessions_tmp)\n         # Merge RCS dataframe with dreem dataframe\n         tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n \n         if not ind:\n"
+                },
+                {
+                    "date": 1682381474538,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,8 +51,9 @@\n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                   (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n \n         print(sessions_tmp)\n+        \n         # Merge RCS dataframe with dreem dataframe\n         tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n \n         if not ind:\n"
+                },
+                {
+                    "date": 1682381488266,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                   (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n \n         print(sessions_tmp)\n-        \n+        print()\n         # Merge RCS dataframe with dreem dataframe\n         tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n \n         if not ind:\n"
+                },
+                {
+                    "date": 1682381497447,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                   (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n \n         print(sessions_tmp)\n-        print()\n+        print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n         tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n \n         if not ind:\n"
+                },
+                {
+                    "date": 1682381547302,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -48,9 +48,9 @@\n         participant_dreem_df = pd.DataFrame.from_dict({\"H5\": h5_file_paths, \"Txt\": txt_file_paths_ordered,\n                                                        \"DateTime\": dates})\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n-                                  (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n+                                  (summary_df[\"SessionType(s)\"] is in \"Overnight\")].copy()\n \n         print(sessions_tmp)\n         print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n"
+                },
+                {
+                    "date": 1682381592574,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -48,9 +48,9 @@\n         participant_dreem_df = pd.DataFrame.from_dict({\"H5\": h5_file_paths, \"Txt\": txt_file_paths_ordered,\n                                                        \"DateTime\": dates})\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n-                                  (summary_df[\"SessionType(s)\"] is in \"Overnight\")].copy()\n+                                  (summary_df[\"SessionType(s)\"] in \"Overnight\")].copy()\n \n         print(sessions_tmp)\n         print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n"
+                },
+                {
+                    "date": 1682381597657,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n \n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n+S\n \n if __name__ == \"__main__\":\n \n     out_file_name = sys.argv[1]\n"
+                },
+                {
+                    "date": 1682381606722,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n \n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n-S\n+SESSION_TYPES = ['Stim Offset']\n \n if __name__ == \"__main__\":\n \n     out_file_name = sys.argv[1]\n"
+                },
+                {
+                    "date": 1682381621181,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n         participant_dreem_df = pd.DataFrame.from_dict({\"H5\": h5_file_paths, \"Txt\": txt_file_paths_ordered,\n                                                        \"DateTime\": dates})\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n-                                  (summary_df[\"SessionType(s)\"] in \"Overnight\")].copy()\n+                                  (summary_df[\"SessionType(s)\"] in SESSION_TYPES)].copy()\n \n         print(sessions_tmp)\n         print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n"
+                },
+                {
+                    "date": 1682381682866,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n         participant_dreem_df = pd.DataFrame.from_dict({\"H5\": h5_file_paths, \"Txt\": txt_file_paths_ordered,\n                                                        \"DateTime\": dates})\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n-                                  (summary_df[\"SessionType(s)\"] in SESSION_TYPES)].copy()\n+                                  (summary_df[\"SessionType(s)\"].isin(SESSION_TYPES)].copy()\n \n         print(sessions_tmp)\n         print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n"
+                },
+                {
+                    "date": 1682381693670,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n         participant_dreem_df = pd.DataFrame.from_dict({\"H5\": h5_file_paths, \"Txt\": txt_file_paths_ordered,\n                                                        \"DateTime\": dates})\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n-                                  (summary_df[\"SessionType(s)\"].isin(SESSION_TYPES)].copy()\n+                                  (summary_df[\"SessionType(s)\"].isin(SESSION_TYPES))].copy()\n \n         print(sessions_tmp)\n         print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n"
+                },
+                {
+                    "date": 1682381721410,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,10 +51,8 @@\n \n         sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                   (summary_df[\"SessionType(s)\"].isin(SESSION_TYPES))].copy()\n \n-        print(sessions_tmp)\n-        print(participant_dreem_df)\n         # Merge RCS dataframe with dreem dataframe\n         tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n \n         if not ind:\n"
+                },
+                {
+                    "date": 1682381737524,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,8 +8,10 @@\n \"\"\"This script creates a CSV that contains the relevant filepaths to RCS raw data, DREEM filepaths, and output paths\n  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n  Intended to be called from command line as 'python3 create_filepath_csv.py <outfile_name> RCS02 RCS03...' \"\"\"\n \n+\n+#PLEASE SET GLOBAL VARIABLES TO\n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n SESSION_TYPES = ['Stim Offset']\n"
+                },
+                {
+                    "date": 1682381757888,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,10 @@\n  in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n  Intended to be called from command line as 'python3 create_filepath_csv.py <outfile_name> RCS02 RCS03...' \"\"\"\n \n \n-#PLEASE SET GLOBAL VARIABLES TO\n+#PLEASE SET GLOBAL VARIABLES BEFORE RUNNING SCRIPT\n+# Summary CSV created in Project Directory by filemover script\n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n SESSION_TYPES = ['Stim Offset']\n"
+                },
+                {
+                    "date": 1682381767278,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,9 @@\n \n #PLEASE SET GLOBAL VARIABLES BEFORE RUNNING SCRIPT\n # Summary CSV created in Project Directory by filemover script\n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n+# Basepath to DREEM data for this project\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n SESSION_TYPES = ['Stim Offset']\n \n"
+                },
+                {
+                    "date": 1682381775667,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,8 +14,9 @@\n # Summary CSV created in Project Directory by filemover script\n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n # Basepath to DREEM data for this project\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n+# No need to ch\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n SESSION_TYPES = ['Stim Offset']\n \n if __name__ == \"__main__\":\n"
+                },
+                {
+                    "date": 1682381783041,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,10 +14,11 @@\n # Summary CSV created in Project Directory by filemover script\n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n # Basepath to DREEM data for this project\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n-# No need to ch\n+# No need to change these\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n+# What session \n SESSION_TYPES = ['Stim Offset']\n \n if __name__ == \"__main__\":\n \n"
+                },
+                {
+                    "date": 1682381789586,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,9 +16,9 @@\n # Basepath to DREEM data for this project\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n # No need to change these\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n-# What session \n+# What session types from Project CSV to include in final \n SESSION_TYPES = ['Stim Offset']\n \n if __name__ == \"__main__\":\n \n"
+                },
+                {
+                    "date": 1682381794656,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,9 +16,9 @@\n # Basepath to DREEM data for this project\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n # No need to change these\n DROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n-# What session types from Project CSV to include in final \n+# What session types from Project CSV to include in final filepath CSV\n SESSION_TYPES = ['Stim Offset']\n \n if __name__ == \"__main__\":\n \n"
+                },
+                {
+                    "date": 1682381886637,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,8 +10,9 @@\n  Intended to be called from command line as 'python3 create_filepath_csv.py <outfile_name> RCS02 RCS03...' \"\"\"\n \n \n #PLEASE SET GLOBAL VARIABLES BEFORE RUNNING SCRIPT\n+\n # Summary CSV created in Project Directory by filemover script\n PROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/SleepStimOffset.csv\"\n # Basepath to DREEM data for this project\n DREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/SleepStimOffset/DREEM/\"\n"
+                }
+            ],
+            "date": 1682380808930,
+            "name": "Commit-0",
+            "content": "import glob\nimport sys\nimport pandas as pd\nimport os\nimport dateutil.parser as dparser\nimport pprint\n\n\"\"\"This script creates a CSV that contains the relevant filepaths to RCS raw data, DREEM filepaths, and output paths\n in order to run DREEM-RCS-Synchronization-Tool package. Uses project summmary CSV.\n Intended to be called from command line as 'python3 create_filepath_csv <outfile_name> RCS02 RCS03...' \"\"\"\n\nPROJECT_SUMMARY_CSV = \"/media/dropbox_hdd/Starr Lab Dropbox/Projects/SleepStimOffset/Sleep_Summary.csv\"\nDREEM_DATA_BASEPATH = \"/media/longterm_hdd/Clay/DREEM_data\"\nDROP_COLUMNS = [\"Dropbox_Link\", \"Data_Server_Hyperlink\", 'Unnamed: 0']\n\nif __name__ == \"__main__\":\n\n    out_file_name = sys.argv[1]\n    rcs_participants = sys.argv[2:]\n    \n    # Read Sleep summary csv, and add column with datetime objects referring to the overnight session end-date\n    summary_df = pd.read_csv(PROJECT_SUMMARY_CSV)\n    summary_df[\"DateTime\"] = summary_df[\"TimeEnded\"].apply(lambda x: dparser.parse(x, fuzzy=True).date())\n\n    side = [\"Left\", \"Right\"]\n\n    for ind, i in enumerate(rcs_participants):\n        \n        # Access DREEM H5 and txt files\n        dreem_part_path = f\"{DREEM_DATA_BASEPATH}/{i}\"\n        dreem_device_path = f\"{dreem_part_path}/{os.listdir(dreem_part_path)[0]}\"\n\n        participant_dreem_txt_path = f\"{dreem_device_path}/SleepData\"\n        participant_dreem_H5_path = f\"{dreem_device_path}/H5\"\n\n        h5_file_paths = [f\"{participant_dreem_H5_path}/{f}\" for f in os.listdir(participant_dreem_H5_path)]\n        txt_file_paths = [f\"{participant_dreem_txt_path}/{f}\" for f in os.listdir(participant_dreem_txt_path)]\n\n        # Create datetime object by parsing H5 file names\n        dates = [dparser.parse(k.split(\"---\")[1], fuzzy=True).date() for k in os.listdir(participant_dreem_H5_path)]\n        # Order txt files paths to sync with DateTime order. Assumes each datetime object is unique\n        txt_file_paths_ordered = []\n        for date in dates:\n            txt_file_paths_ordered.extend([txt_path for txt_path in txt_file_paths\n                                           if date.strftime(\"%d-%b-%Y\") in txt_path])\n\n        # Create pandas dataframe of Dreem file paths and datetime objects\n        participant_dreem_df = pd.DataFrame.from_dict({\"H5\": h5_file_paths, \"Txt\": txt_file_paths_ordered,\n                                                       \"DateTime\": dates})\n\n        sessions_tmp = summary_df[(summary_df['RCS#'] == i) &\n                                  (summary_df[\"SessionType(s)\"] == \"Overnight\")].copy()\n\n        # Merge RCS dataframe with dreem dataframe\n        tmp_df = participant_dreem_df.merge(sessions_tmp, how='inner', on=\"DateTime\")\n\n        if not ind:\n            dreem_filepath_df = tmp_df.drop(DROP_COLUMNS, axis=1)\n        else:\n            dreem_filepath_df = pd.concat([dreem_filepath_df, tmp_df.drop(DROP_COLUMNS, axis=1)], axis=0)\n\n\n    dreem_filepath_df.to_csv(out_file_name)\n"
+        }
+    ]
+}

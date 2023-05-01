@@ -1,0 +1,70 @@
+{
+    "sourceFile": "model_development/embedded_model_classes.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 13,
+            "patches": [
+                {
+                    "date": 1681849041128,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1681849076321,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,4 +20,6 @@\n             else:\n                 # if the predictions are different, return the prediction of the first LDA object\n                 prediction = pred1[i]\n             yield prediction\n+\n+\n"
+                },
+                {
+                    "date": 1681849082832,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,4 +22,37 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n+\n+class DoubleLDA():\n+    def __init__(self):\n+        self.lda1 = LinearDiscriminantAnalysis()\n+        self.lda2 = LinearDiscriminantAnalysis()\n+\n+    def fit(self, X, y):\n+        self.lda1.fit(X, y)\n+        pred1 = self.lda1.predict(X)\n+        # Find the class with worse score\n+        score1 = self.lda1.score(X, y)\n+        classes = self.lda1.classes_\n+        score2 = score1\n+        worst_class = classes[0]\n+        for c in classes:\n+            if self.lda1.score(X[pred1 == c], y[pred1 == c]) < score2:\n+                score2 = self.lda1.score(X[pred1 == c], y[pred1 == c])\n+                worst_class = c\n+        self.lda2.fit(X[pred1 == worst_class], y[pred1 == worst_class])\n+\n+    def predict(self, X):\n+        pred1 = self.lda1.predict(X)\n+        pred2 = self.lda2.predict(X)\n+        \n+        for i in range(len(X)):\n+            if pred1[i] == pred2[i]:\n+                # if the predictions are the same, return that prediction\n+                prediction = pred1[i]\n+            else:\n+                # if the predictions are different, return the prediction of the first LDA object\n+                prediction = pred1[i]\n+            yield prediction\n"
+                },
+                {
+                    "date": 1681849088693,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,10 +22,8 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n-\n class DoubleLDA():\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n"
+                },
+                {
+                    "date": 1681849112415,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,4 +53,6 @@\n             else:\n                 # if the predictions are different, return the prediction of the first LDA object\n                 prediction = pred1[i]\n             yield prediction\n+\n+\n"
+                },
+                {
+                    "date": 1681849122552,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,4 +55,40 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n+class DoubleLDA():\n+    def __init__(self):\n+        self.lda1 = LinearDiscriminantAnalysis()\n+        self.lda2 = LinearDiscriminantAnalysis()\n+\n+    def fit(self, X, y):\n+        self.lda1.fit(X, y)\n+        pred1 = self.lda1.predict(X)\n+        # Find the class with worse score\n+        score1 = self.lda1.score(X, y)\n+        classes = self.lda1.classes_\n+        score2 = score1\n+        worst_class = classes[0]\n+        for c in classes:\n+            if self.lda1.score(X[pred1 == c], y[pred1 == c]) < score2:\n+                score2 = self.lda1.score(X[pred1 == c], y[pred1 == c])\n+                worst_class = c\n+        self.lda2.fit(X[pred1 == worst_class], y[pred1 == worst_class])\n+\n+    def predict(self, X):\n+        pred1 = self.lda1.predict(X)\n+        pred2 = self.lda2.predict(X)\n+        prob1 = self.lda1.predict_proba(X)\n+        prob2 = self.lda2.predict_proba(X)\n+        \n+        for i in range(len(X)):\n+            if pred1[i] == pred2[i]:\n+                # if the predictions are the same, return that prediction\n+                prediction = pred1[i]\n+            else:\n+                # if the predictions are different, choose the prediction with highest probability\n+                if max(prob1[i]) >= max(prob2[i]):\n+                    prediction = pred1[i]\n+                else:\n+                    prediction = pred2[i]\n+            yield prediction\n"
+                },
+                {
+                    "date": 1681849159555,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -91,4 +91,6 @@\n                     prediction = pred1[i]\n                 else:\n                     prediction = pred2[i]\n             yield prediction\n+\n+\n"
+                },
+                {
+                    "date": 1681849164817,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,4 +93,35 @@\n                     prediction = pred2[i]\n             yield prediction\n \n \n+from sklearn.base import BaseEstimator, ClassifierMixin\n+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n+\n+\n+class MyLDAEnsembleClassifier(BaseEstimator, ClassifierMixin):\n+    def __init__(self):\n+        self.lda1 = LinearDiscriminantAnalysis()\n+        self.lda2 = LinearDiscriminantAnalysis()\n+\n+    def fit(self, X, y):\n+        self.lda1.fit(X, y)\n+        y_pred_1 = self.lda1.predict(X)\n+        self.lda2.fit(X[y_pred_1 != y], y[y_pred_1 != y])\n+        return self\n+\n+    def predict(self, X):\n+        y_pred_1 = self.lda1.predict(X)\n+        y_pred_2 = self.lda2.predict(X)\n+        return [y_pred_1[i] if y_pred_1[i] == y_pred_2[i] else y_pred_1[i] \n+                for i in range(len(y_pred_1))]\n+\n+    def predict_proba(self, X):\n+        proba_1 = self.lda1.predict_proba(X)\n+        proba_2 = self.lda2.predict_proba(X)\n+        max_proba = []\n+        for i in range(len(proba_1)):\n+            if proba_1[i][y_pred_1[i]] > proba_2[i][y_pred_1[i]]:\n+                max_proba.append(proba_1[i])\n+            else:\n+                max_proba.append(proba_2[i])\n+        return max_proba\n"
+                },
+                {
+                    "date": 1681849173072,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,12 +93,8 @@\n                     prediction = pred2[i]\n             yield prediction\n \n \n-from sklearn.base import BaseEstimator, ClassifierMixin\n-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n-\n-\n class MyLDAEnsembleClassifier(BaseEstimator, ClassifierMixin):\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n"
+                },
+                {
+                    "date": 1681849198111,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,5 @@\n+from sklearn.base import BaseEstimator, ClassifierMixin\n from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n \n class DoubleLDA():\n     def __init__(self):\n@@ -22,9 +23,9 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n-class DoubleLDA():\n+class LayeredDoubleLDA():\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n \n"
+                },
+                {
+                    "date": 1681849204950,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n from sklearn.base import BaseEstimator, ClassifierMixin\n from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n \n-class DoubleLDA():\n+class FlatDoubleLDA():\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n \n"
+                },
+                {
+                    "date": 1681849213767,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n-class DoubleLDA():\n+class ProbabiDoubleLDA():\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n \n"
+                },
+                {
+                    "date": 1681849220152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n-class ProbabiDoubleLDA():\n+class DoubleLDA():\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n \n"
+                },
+                {
+                    "date": 1681849229371,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n                 prediction = pred1[i]\n             yield prediction\n \n \n-class DoubleLDA():\n+class ProbabilityDoubleLDA():\n     def __init__(self):\n         self.lda1 = LinearDiscriminantAnalysis()\n         self.lda2 = LinearDiscriminantAnalysis()\n \n"
+                }
+            ],
+            "date": 1681849041128,
+            "name": "Commit-0",
+            "content": "from sklearn.discriminant_analysis import LinearDiscriminantAnalysis\n\nclass DoubleLDA():\n    def __init__(self):\n        self.lda1 = LinearDiscriminantAnalysis()\n        self.lda2 = LinearDiscriminantAnalysis()\n\n    def fit(self, X, y):\n        self.lda1.fit(X, y)\n        self.lda2.fit(X, y)\n\n    def predict(self, X):\n        pred1 = self.lda1.predict(X)\n        pred2 = self.lda2.predict(X)\n        \n        for i in range(len(X)):\n            if pred1[i] == pred2[i]:\n                # if the predictions are the same, return that prediction\n                prediction = pred1[i]\n            else:\n                # if the predictions are different, return the prediction of the first LDA object\n                prediction = pred1[i]\n            yield prediction\n"
+        }
+    ]
+}
