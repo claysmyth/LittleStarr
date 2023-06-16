@@ -1,22 +1,23 @@
 import numpy as np
 import polars as pl
+import pandas as pd
 
-def get_device_as_pl_df(device, db_con, lazy=False):
+def get_device_as_pl_df(device, db_con, lazy=False, time_zone='America/Los_Angeles'):
     """
     Accesses duckdb database and returns columns of interest, labeled reasonably with session identifiers cast as categoricals.
     :param device: device name (str) (e.g. '02L')
     :param db_con: duckdb connection object
     :return: polars Dataframe
     """
-    db_con.sql("SET TIMEZONE = 'America/Los_Angeles'")
+    db_con.sql(f"SET TIMEZONE = '{time_zone}'")
     if lazy:
         return db_con.sql(f"select DerivedTime, columns('localTime'), columns('^Session|TD_|Power_Band'), SleepStage from overnight.r{device}").pl().lazy().with_columns(
             pl.col('^Session.*$').cast(pl.Categorical)
-        )
+        ).sort('localTime').select(pl.all().shrink_dtype())
     else:
         return db_con.sql(f"select DerivedTime, columns('localTime'), columns('^Session|TD_|Power_Band'), SleepStage from overnight.r{device}").pl().with_columns(
             pl.col('^Session.*$').cast(pl.Categorical)
-        )
+        ).sort('localTime').select(pl.all().shrink_dtype())
 
 def get_device_as_pd_df(device, db_con):
     """
@@ -28,7 +29,7 @@ def get_device_as_pd_df(device, db_con):
     return db_con.execute(f"select DerivedTime, columns('localTime'), columns('^Session|TD_|Power_Band'), SleepStage from overnight.r{device}").df()
 
 
-def get_gains_from_settings_dict(sessions, identity_col, device, db_con) -> np.ndarray:
+def get_gains_from_settings(sessions, identity_col, device, db_con) -> np.ndarray:
     """
 
     :param settings:
@@ -46,6 +47,7 @@ def get_gains_from_settings_dict(sessions, identity_col, device, db_con) -> np.n
         if (f"chan{i}" in td_settings.columns) and not ('Disabled' in td_settings[f"chan{i}"][0]):
             gains.append(td_settings[f"gain_{i}"][0])
     return np.array(gains)
+
 
 
 def get_settings_for_pb_calcs(device, db_con, session_nums, identity_col):

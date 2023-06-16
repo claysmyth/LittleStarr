@@ -3,18 +3,42 @@
 % individual tables and exports as csvs. If desired, Sessions can be selected by
 % sessiontype.
 
+% Example Params...
+% PROJ_SUMMARY_CSV = '/media/dropbox_hdd/Starr Lab Dropbox/Projects/Sleep/Sleep_Summary.csv';
+% desired_session_types = ['Overnight'];
+% output_prefix = 'overnight_';
+% OUT_PATH_BASE = '/media/longterm_hdd/Clay/Sleep_10day_with_autonomic/';
+% 
+% save_combined_data_table_as_parquet = false;
+% dataStreams = {'timeDomainData', 'PowerData', 'AdaptiveData', 'AccelData'};
 
-PROJ_SUMMARY_CSV = '/media/dropbox_hdd/Starr Lab Dropbox/Projects/Sleep/Sleep_Summary.csv';
-desired_session_types = ['Overnight'];
-output_prefix = 'overnight_';
-OUT_PATH_BASE = '/media/longterm_hdd/Clay/Sleep_10day_with_autonomic/';
+% PROJ_SUMMARY_CSV = '/media/longterm_hdd/Clay/EvokedPotentials_OFF_and_ON_med/off_medication_raw/Sleep_Summary_with_cleaned_Autorun_paths_and_no_RCS20.csv';
+% desired_session_types = ['Autorun'];
+% output_prefix = 'autorun_';
+% OUT_PATH_BASE = '/media/longterm_hdd/Clay/EvokedPotentials_OFF_and_ON_med/off_medication_raw/';
+
+PROJ_SUMMARY_CSV = '/media/longterm_hdd/Clay/EvokedPotentials_OFF_and_ON_med/on_medication_raw/EvokedPotentials_bad_sessions_removed.csv';
+desired_session_types = ['EvokedPotential'];
+output_prefix = 'evokedpotential_';
+OUT_PATH_BASE = '/media/longterm_hdd/Clay/EvokedPotentials_OFF_and_ON_med/on_medication_raw/';
+
+save_combinedDataTable_as_parquet = true;
+% Options for dataStreams. Choose which dataStreams by setting 'data_to_include_in_combinedDataTable' to one of the following numbers:
+% 1 : {timeDomainData}
+% 2 : {timeDomainData, PowerData}
+% 3 : {timeDomainData, PowerData, AccelData}
+% 4 : {timeDomainData, PowerData, AdaptiveData}
+% 5 : {timeDomainData, PowerData, AdaptiveData, AccelData}
+data_to_include_in_combinedDataTable = 'EvokedPotential';
 
 
 display_text = "Proceed with" + newline + "-proj_summary_csv: %s" + newline ...
     + "-output_dir: %s" + newline + "-session types: %s" + ...
     newline + "-file output prefix: %s" + ...
+    newline + '-save sessions as parquets: %s' + ...
+    newline + '...(if saving) with data streams: %s' + ...
     newline + "[Y/N]";
-prompt = sprintf(display_text, PROJ_SUMMARY_CSV, OUT_PATH_BASE, desired_session_types, output_prefix);
+prompt = sprintf(display_text, PROJ_SUMMARY_CSV, OUT_PATH_BASE, desired_session_types, output_prefix, string(save_combinedDataTable_as_parquet), string(data_to_include_in_combinedDataTable));
 txt = input(prompt, "s");
 
 if txt ~= "Y" & txt ~= "y"
@@ -67,6 +91,30 @@ for i=1:size(relevant_sessions, 1)
     fftSettings, eventLogTable, metaData, stimSettingsOut, stimMetaData, ...
     stimLogSettings, DetectorSettings, AdaptiveStimSettings, ...
     AdaptiveEmbeddedRuns_StimSettings] = ProcessRCS(raw_data_path, 2);
+
+    if save_combinedDataTable_as_parquet
+        switch data_to_include_in_combinedDataTable
+            case 1
+                dataStreams = {timeDomainData};
+            case 2
+                dataStreams = {timeDomainData, PowerData};
+            case 3
+                dataStreams = {timeDomainData, PowerData, AccelData};
+            case 4
+                dataStreams = {timeDomainData, PowerData, AdaptiveData};
+            case 5
+                dataStreams = {timeDomainData, PowerData, AdaptiveData, AccelData};
+            case 'EvokedPotential' % TODO: Figure out why processed Autorun Data throws error in createCombinedTable()
+                dataStreams = timeDomainData;
+        end
+        if isequal(class(data_to_include_in_combinedDataTable), 'cell')
+            [combinedDataTable] = createCombinedTable(dataStreams,unifiedDerivedTimes,metaData);
+        else
+            combinedDataTable = dataStreams;
+        end
+        parquet_out_file_path = fullfile(OUT_PATH_BASE, curr_device, [relevant_sessions.('Session#'){i}, '.parquet']);
+        parquetwrite(parquet_out_file_path, combinedDataTable);
+    end
 
     if isempty(all_data_table(strcmp(all_data_table.Devices, curr_device), :).TDSettings{1})
         all_data_table(strcmp(all_data_table.Devices, curr_device), :).TDSettings{1} = denest_and_process_td_settings(timeDomainSettings, metaData, session_descriptors);

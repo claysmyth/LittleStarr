@@ -17,7 +17,7 @@ def get_sleep_stage_dict(df, cols):
     return sleep_stage_data_dict
 
 
-@dispatch(pl.internals.dataframe.frame.DataFrame, list)
+@dispatch(pl.dataframe.frame.DataFrame, list)
 def get_sleep_stage_dict(df, cols):
     """
     returns dictionary with key-value pair as sleep stage (int) : n x size(cols) dataframe corresponding to that sleep stage
@@ -30,7 +30,7 @@ def get_sleep_stage_dict(df, cols):
     return sleep_stage_data_dict
 
 
-def chunk_df_by_timesegment(df, interval='1s', period='2s', sample_rate=500, align_with_PB_outputs=False, td_columns=['TD_BG', 'TD_key2', 'TD_key3']):
+def chunk_df_by_timesegment(df, interval='1s', period='2s', sample_rate=500, align_with_PB_outputs=False, td_columns=['TD_BG', 'TD_key2', 'TD_key3'], by_cols=['SessionIdentity', 'SleepStage'], cols_to_include=[]):
     """
     Chunk a dataframe based on a time interval and period.
     The period is the length of the time segment, the interval is the time between the start of each time segment.
@@ -54,29 +54,32 @@ def chunk_df_by_timesegment(df, interval='1s', period='2s', sample_rate=500, ali
             pl.when( (pl.col('PB_count') % 2) == 1).then(pl.lit(None)).otherwise(pl.col('PB_count')).fill_null(strategy='backward').alias('PB_count_even')
         ])
 
-        df_pb_count = df_pb_count.groupby(['SleepStage', 'PB_count_even']).agg(
+        df_pb_count = df_pb_count.groupby(by_cols+['PB_count_even']).agg(
             [
                 pl.col('DerivedTime'),
                 pl.col('^Power_Band.*$').drop_nulls().first(),
                 pl.col('^TD_.*$'),
                 pl.col(td_cols[0]).count().alias('TD_count')
-            ]).rename({'PB_count_even': 'PB_ind'}).vstack(
-                df_pb_count.groupby(['SleepStage', 'PB_count_odd']).agg(
+            ] + [pl.col(col) for col in cols_to_include]
+            ).rename({'PB_count_even': 'PB_ind'}).vstack(
+                df_pb_count.groupby(by_cols+['PB_count_odd']).agg(
                     [
                         pl.col('DerivedTime'),
                         pl.col('^Power_Band.*$').drop_nulls().first(),
                         pl.col('^TD_.*$'),
                 pl.col(td_cols[0]).count().alias('TD_count')
-                    ]).rename({'PB_count_odd': 'PB_ind'})
+                    ] + [pl.col(col) for col in cols_to_include]
+                    ).rename({'PB_count_odd': 'PB_ind'})
         ).select(pl.all().shrink_dtype()).rechunk()
 
         df_chunked = df_pb_count
     else:
-        df_grouped = df.sort('localTime').groupby_dynamic('localTime', every=interval, period=period, by=['SessionIdentity', 'SleepStage']).agg([
+        df_grouped = df.sort('localTime').groupby_dynamic('localTime', every=interval, period=period, by=by_cols).agg([
             pl.col('DerivedTime'),
             pl.col('^Power_Band.*$').drop_nulls().first(),
             pl.col('^TD_.*$'),
-                pl.col(td_cols[0]).count().alias('TD_count')]).select(pl.all().shrink_dtype())
+                pl.col(td_cols[0]).count().alias('TD_count')] + [pl.col(col) for col in cols_to_include]
+            ).select(pl.all().shrink_dtype())
 
         df_grouped = df_grouped.with_columns(
                     pl.col(td_cols[0]).arr.eval(pl.element().is_null().any()).alias('TD_null')
