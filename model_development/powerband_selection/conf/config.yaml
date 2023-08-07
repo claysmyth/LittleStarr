@@ -1,0 +1,52 @@
+# Main config. Holds parameters on PB identification pipeline.
+device: MISSING
+run_title: all_tds
+BASE_PATH: /media/shortterm_ssd/Clay/databases/Sleep_10day_with_autonomic/powerband_identification/${device}/${run_title}/${now:%Y-%m-%d}_${now:%H-%M-%S}/
+file_name: "powerband_search_results_${now:%Y-%m-%d}_${now:%H-%M-%S}.parquet"
+
+leave_one_session_out_validation: True
+
+# N2+N3
+sleep_stage_mapping:
+  1: 0
+  2: 1
+  3: 1
+  4: 0
+  5: 0
+  6: 0
+
+# REM
+# sleep_stage_mapping:
+#   1: 0
+#   2: 0
+#   3: 0
+#   4: 0
+#   5: 1
+#   6: 0
+
+parameters:
+  fft_subset_inds:
+  - 2
+  - 120
+  TD_Columns:
+  - TD_BG
+  - TD_key2
+  - TD_key3
+  model: LinearDiscriminantAnalysis
+  cross_val: 5
+  UpdateRate: 30
+  random_state: 11
+  sfs_scoring: roc_auc
+  impose_channel_constraint: True
+
+use_ray: False
+
+defaults:
+  - _self_
+  - method_params: sfs_band
+
+hydra:
+  run:
+    dir: ${BASE_PATH}
+  job:
+    chdir: False

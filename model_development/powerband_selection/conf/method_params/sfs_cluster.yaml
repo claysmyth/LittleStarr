@@ -1,0 +1,9 @@
+method: sfs_cluster
+
+defaults:
+  - _self_
+  - feature_filter: corr
+
+parameters:
+  max_clusters: 8
+  num_features_to_select_sfs: 24

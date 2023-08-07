@@ -1,0 +1,40 @@
+parameters:
+  corr_threshold: 0.05
+  num_features_to_select: 30
+  sfs_scoring: roc_auc
+  fft_subset_inds:
+  - 2
+  - 120
+  max_clusters: 8
+  TD_Columns:
+  - TD_BG
+  model: LinearDiscriminantAnalysis
+  cross_val: 5
+  corr_type: spearman
+
+sleep_stage_mapping:
+  1: 0
+  2: 1
+  3: 1
+  4: 0
+  5: 0
+  6: 0
+batches:
+- - 02L
+  - 02R
+  - 03L
+  - 03R
+  - 07L
+- - 07R
+  - 09L
+  - 09R
+  - 16L
+  - 16R
+file_name: "hyperparameter_search_results_LDA_subcortical_${now:%Y-%m-%d}_${now:%H-%M-%S}.parquet"
+BASE_PATH: /media/shortterm_ssd/Clay/databases/Sleep_10day_with_autonomic/subcortical_powerband_selection/
+
+hydra:
+  run:
+    dir: ${BASE_PATH}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job:
+    chdir: False

@@ -82,9 +82,9 @@ def chunk_df_by_timesegment(df, interval='1s', period='2s', sample_rate=500, ali
             ).select(pl.all().shrink_dtype())
 
         df_grouped = df_grouped.with_columns(
-                    pl.col(td_cols[0]).arr.eval(pl.element().is_null().any()).alias('TD_null')
+                    pl.col(td_cols[0]).list.eval(pl.element().is_null().any()).alias('TD_null')
                 ).filter((pl.col('TD_count') == int(period[0]) * sample_rate ) &
-                        (pl.col('TD_null').arr.contains(False))
+                        (pl.col('TD_null').list.contains(False))
                         )
         df_chunked = df_grouped
     return df_chunked

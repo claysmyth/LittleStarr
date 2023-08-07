@@ -1,0 +1,44 @@
+parameters:
+  num_features_to_select: 50
+  fft_subset_inds:
+  - 2
+  - 120
+  max_clusters: 8
+  TD_Columns:
+  - TD_key2
+  - TD_key3
+  model: LinearDiscriminantAnalysis
+  cross_val: 5
+  UpdateRate: 30
+  random_state: 11
+
+# sleep_stage_mapping:
+#   1: 0
+#   2: 1
+#   3: 1
+#   4: 0
+#   5: 0
+#   6: 0
+
+# use_ray: False
+# batches: None
+# # - - 02L
+# #   - 02R
+# #   - 03L
+# #   - 03R
+# #   - 07L
+# # - - 07R
+# #   - 09L
+# #   - 09R
+# #   - 16L
+# #   - 16R
+# Device: 02R
+# run_title: cortical_tds
+# BASE_PATH: /media/shortterm_ssd/Clay/databases/Sleep_10day_with_autonomic/powerband_identification/${Device}/${run_title}/${now:%Y-%m-%d}_${now:%H-%M-%S}/
+# file_name: "powerband_search_results_${now:%Y-%m-%d}_${now:%H-%M-%S}.parquet"
+
+# hydra:
+#   run:
+#     dir: ${BASE_PATH}
+#   job:
+#     chdir: False

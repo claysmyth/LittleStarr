@@ -1,0 +1,6 @@
+method: sfs_band
+
+parameters:
+  powerband_selection: search
+  max_pb_width: 8
+  score_improvement_threshold: 0.05

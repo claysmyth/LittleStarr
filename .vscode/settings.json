@@ -1,3 +1,20 @@
 {
-    "local-history.browser.descending": false
+    "local-history.browser.descending": false,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "DuckDB",
+            "name": "rcs_db",
+            "database": "/media/shortterm_ssd/Clay/databases/duckdb/rcs-db.duckdb"
+        }
+    ],
+    "sqltools.useNodeRuntime": true,
+    "python.analysis.extraPaths": [
+        "./databasing"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    },
+    "python.formatting.provider": "none",
+    "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}"}
 }

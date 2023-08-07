@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Python: Current File",
             "type": "python",
@@ -11,10 +12,10 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": [
-                "--env_name", "LunarLander-v3",
-                "--exp_name", "q1"
-             ]
+            "purpose": ["debug-in-terminal"],
+            "cwd": "${fileDirname}",
+            "env": {"PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"},
+            "args": ["device=03L", "run_title=sfs_sub_debug", "parameters.TD_Columns=[TD_BG]", "parameters.impose_channel_constraint=False"]
         }
     ]
 }
