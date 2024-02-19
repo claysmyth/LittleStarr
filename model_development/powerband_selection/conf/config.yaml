@@ -33,7 +33,8 @@ parameters:
   - TD_key2
   - TD_key3
   model: LinearDiscriminantAnalysis
-  cross_val: 5
+  n_folds: 5
+  stratified_cv: False
   UpdateRate: 30
   random_state: 11
   sfs_scoring: roc_auc

@@ -13,9 +13,9 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "purpose": ["debug-in-terminal"],
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "env": {"PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"},
-            "args": ["device=03L", "run_title=sfs_sub_debug", "parameters.TD_Columns=[TD_BG]", "parameters.impose_channel_constraint=False"]
+            "args": ["device=02R", "run_title=sfs_band_clf_viz"]
         }
     ]
 }

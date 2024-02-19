@@ -2,8 +2,8 @@ import duckdb
 import polars as pl
 from sklearn import metrics
 import numpy as np
-from powerband_identification_sfs_bands import sfs_band_pipeline
-from powerband_identification_sfs_cluster import sfs_cluster_pipeline
+from .powerband_identification_sfs_bands import sfs_band_pipeline
+from .powerband_identification_sfs_cluster import sfs_cluster_pipeline
 
 def load_training_data_from_db(device, db_path, session_validation=False):
     """
@@ -280,16 +280,7 @@ def powerband_identification_pipeline(device, parameters, sleep_stage_mapping, o
     
     # Identify powerbands via desired method
     if parameters['method'] == 'sfs_cluster':
-        # if parameters['filtering_method'] == 'corr':
-            # Run spearman correlation to filter features...
         df_pbs = sfs_cluster_pipeline(df_training, parameters, settings, out_file_path)
-        # elif parameters['filtering_method'] == 'KL_divergence':
-        #     # Run KL divergence to filter features...
-        #     None
-        # else:
-        #     raise ValueError(f'Invalid selection method: {parameters["filtering_method"]}')
-        
-        # TODO: Take only top K PB combinations
         if parameters['sfs_scoring'] == 'roc_auc':
             scoring = 'AUC'
         else:
@@ -300,7 +291,7 @@ def powerband_identification_pipeline(device, parameters, sleep_stage_mapping, o
     elif parameters['method'] == 'sfs_band':
         # Process data into format for SFS band selection: Unpack fft_bin struct into columns
         # df_training = df_training.rename({f"fft_bin_{i}": f"col_{i}" for i in df_training.columns if "fft_bin" in i})
-        df_pbs = sfs_band_pipeline(df_training, parameters, parameters['impose_channel_constraint'])
+        df_pbs = sfs_band_pipeline(df_training, parameters, parameters['impose_channel_constraint'], out_file_path)
     else:
         raise ValueError(f'Invalid powerband identification method: {parameters["method"]}')
     
@@ -334,7 +325,8 @@ def powerband_identification_pipeline(device, parameters, sleep_stage_mapping, o
         for i in range(df_pbs.height):
             pbs = [value for value in df_pbs.select(pl.col('^PB.*$'))[i].to_dicts()[0].values()]
             # Get the scores for the validation session
-            # TODO: Make sure last index in PB is included...
+            
+            # Note: Could have used GroupedKFold, and grouped by SessionIdentity
             session_cross_validate = leave_one_session_out_cross_validation(
                 df, sessions, pbs, parameters
             )

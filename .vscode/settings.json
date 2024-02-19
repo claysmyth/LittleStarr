@@ -16,5 +16,13 @@
         "editor.defaultFormatter": "ms-python.python"
     },
     "python.formatting.provider": "none",
-    "terminal.integrated.env.linux": {"PYTHONPATH": "${workspaceFolder}"}
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
+    "jupyter.notebookFileRoot": "${workspaceFolder}",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#4A1E39",
+        "titleBar.activeBackground": "#682A4F",
+        "titleBar.activeForeground": "#FCF9FB"
+    }
 }

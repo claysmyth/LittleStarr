@@ -1,7 +1,13 @@
 import polars as pl
 from sklearn.feature_selection import SequentialFeatureSelector
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, KFold, StratifiedKFold
 import numpy as np
+from visualization_functions.distribution_viz import plot_feature_distributions
+import os
+from mlxtend.plotting import plot_decision_regions
+from itertools import combinations
+from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 
 
 def get_data_for_sfs(df, label_col="SleepStageBinary"):
@@ -56,7 +62,7 @@ def sfs_pass(X, y, n_features_to_select, parameters, use_sklearn_sfs=False):
             estimator=model,
             n_features_to_select=n_features_to_select,
             direction="forward",
-            n_jobs=parameters["cross_val"] + 1,
+            n_jobs=parameters["n_folds"] + 1,
             cv=parameters["cross_val"],
             scoring=parameters["sfs_scoring"],
         )
@@ -80,7 +86,7 @@ def sfs_pass(X, y, n_features_to_select, parameters, use_sklearn_sfs=False):
                         y,
                         cv=parameters["cross_val"],
                         scoring=parameters["sfs_scoring"],
-                        n_jobs=parameters["cross_val"] + 1,
+                        n_jobs=parameters["n_folds"] + 1,
                     )["test_score"]
                 )
                 for k in range(features_to_explore.shape[-1])
@@ -94,7 +100,7 @@ def sfs_pass(X, y, n_features_to_select, parameters, use_sklearn_sfs=False):
                         y,
                         cv=parameters["cross_val"],
                         scoring=parameters["sfs_scoring"],
-                        n_jobs=parameters["cross_val"] + 1,
+                        n_jobs=parameters["n_folds"] + 1,
                     )["test_score"]
                 )
                 for k in range(X.shape[-1])
@@ -125,7 +131,7 @@ def cv_on_powerbands(X_df, y, pbs, parameters, scoring=None):
         y,
         cv=parameters["cross_val"],
         scoring=scoring_method,
-        n_jobs=parameters["cross_val"] + 1,
+        n_jobs=parameters["n_folds"] + 1,
     )
 
     if isinstance(scoring_method, str):
@@ -269,7 +275,7 @@ def get_best_pb(putative_pb_df, X_df, y, pbs, parameters):
     )
 
 
-def sfs_band_pipeline(df, parameters, impose_channel_constraint):
+def sfs_band_pipeline(df, parameters, impose_channel_constraint, outpath):
     """
     Run SFS band selection on the input dataframe.
     params:
@@ -285,6 +291,13 @@ def sfs_band_pipeline(df, parameters, impose_channel_constraint):
 
     pb_selection = parameters["powerband_selection"]
     sfs_scores = []
+    
+    # Set up Cross-Validation
+    # TODO: Move this up to powerband_identification.py?
+    if parameters["stratified_cv"]:
+        parameters["cross_val"] = StratifiedKFold(n_splits=parameters["n_folds"], random_state=parameters['random_state'], shuffle=True)
+    else:
+        parameters["cross_val"] = KFold(n_splits=parameters["n_folds"], random_state=parameters['random_state'], shuffle=True)
 
     for i in range(1, 5):
 
@@ -324,6 +337,79 @@ def sfs_band_pipeline(df, parameters, impose_channel_constraint):
         pbs.append(pb)
         sfs_scores.append(score)
 
+    
+    # Plot powerband distributions
+    feature_df = create_feature_matrix(X_df, pbs).select(pl.col('^PB.*$')).with_columns(
+        pl.Series('SleepStageBinary', y)
+    )
+    feature_df = feature_df.rename({ele: f'Powerband_{i+1}' for i, ele in enumerate(feature_df.columns) if 'PB' in ele})
+    
+    plot_feature_distributions(feature_df, 
+                            [pb_col for pb_col in feature_df.columns if 'PB' in pb_col], 
+                            'SleepStageBinary').write_html(f"{os.path.dirname(outpath)}/feature_distributions.html")
+    
+    # Plot CLF boundaries
+    features_df = feature_df.with_columns(
+        # Normalize features for visualization purposes
+        (pl.col('^Power.*$') - pl.col('^Power.*$').mean()) / pl.col('^Power.*$').std()
+        # And filter out outliers for visualization purposes
+        ).filter(pl.all_horizontal(pl.col('^Power.*$').is_between(-5,5)))
+    
+    features = features_df.select(pl.col('^Power.*$')).to_numpy()
+    y = features_df['SleepStageBinary'].to_numpy().squeeze()
+    
+    off_feature_value = 0
+    off_feature_range = 2.5
+    
+    rand_subset = np.random.choice(np.size(y), size=np.size(y)//10, replace=False)
+    scatter_kwargs = {'s': 4, 'edgecolor': None, 'alpha': 0.7}
+    
+    for i in range(len(pbs)):
+        curr_features = features[:, :i+1]
+        clf = parameters['model']
+        clf.fit(curr_features, y)
+        
+        if i == 0:
+            gs = gridspec.GridSpec(1, 1)
+            combos = [(0, 0)]
+        elif i == 1:
+            gs = gridspec.GridSpec(1, 2)
+            combos = [(0,0), (0,1)]
+        else:
+            gs = gridspec.GridSpec(i+1, i+1)
+            combos = list(combinations(np.arange(i+1), 2)) + list(zip(np.arange(i+1).tolist(), np.arange(i+1).tolist()))
+        
+        fig = plt.figure(figsize=(15, 15))
+        for combo in combos:
+            ax = fig.add_subplot(gs[combo[0], combo[1]])
+            features_to_plot = np.unique(combo).tolist()
+            off_features = np.setdiff1d(np.arange(i+1), features_to_plot)
+            if len(combos) > 1:
+                filler_feature_values={off_feature: off_feature_value for off_feature in off_features}
+                filler_feature_ranges={off_feature: off_feature_range for off_feature in off_features}
+                plot_decision_regions(X=curr_features[rand_subset,:], y=y[rand_subset],
+                                            feature_index=(combo[1], combo[0]),
+                                            filler_feature_values=filler_feature_values,
+                                            filler_feature_ranges=filler_feature_ranges, clf=clf, legend=2,
+                                            scatter_kwargs=scatter_kwargs,
+                                            ax=ax)
+            else:
+                plot_decision_regions(X=curr_features[rand_subset,:], y=y[rand_subset],
+                                    clf=clf, legend=2,
+                                    scatter_kwargs=scatter_kwargs,
+                                    ax=ax)
+                
+            ax.set_xlabel(f'Powerband {combo[1] + 1}')
+            ax.set_ylabel(f'Powerband {combo[0] + 1}')
+        
+        plt.suptitle(f'Model Results on Powerbands with {i+1} Powerbands')
+        plt.tight_layout()
+        plt.savefig(f'{os.path.dirname(outpath)}/clf_results_{i+1}_powerbands.png')
+        
+        
+        
+        
+    
     # Get the final cross-validated results of the powerband combination
     score_dict = {
         "accuracy": "accuracy",

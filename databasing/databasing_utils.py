@@ -9,6 +9,17 @@ def create_sorted_view(table_name, sort_column, db_path):
 
 
 def sort_table_by_column(table_name, sort_column, db_path):
+    """
+    Sorts a table in a DuckDB database by a specified column.
+
+    Args:
+        table_name (str): The name of the table to sort.
+        sort_column (str): The name of the column to sort by.
+        db_path (str): The path to the DuckDB database.
+
+    Returns:
+        None
+    """
     con = duckdb.connect(database=db_path)
     con.sql(f"CREATE TABLE {table_name}_sorted AS SELECT * FROM {table_name} ORDER BY {sort_column}")
     con.sql(f"DROP TABLE {table_name}")
